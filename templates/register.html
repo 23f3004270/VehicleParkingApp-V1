@@ -12,7 +12,7 @@
                 {% endif %}
             {% endwith %}
             <h3 class="card-title text-center mb-4">Create Your ParkEZily Account</h3>
-            <form method="post" action="{{ url_for('auth.register_user') }}">
+            <form method="post" action="{{ url_for('auth.register') }}"> <!-- CHANGED HERE -->
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
                     <input type="text" class="form-control" id="fullName" name="fullName" required>
@@ -28,7 +28,7 @@
                 <button type="submit" class="btn btn-success btn-block mt-4">Register</button>
             </form>
             <div class="text-center mt-3">
-                <small>Already have an account? <a href="{{ url_for('auth.login_user') }}">Log in</a></small>
+                <small>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></small> <!-- AND HERE -->
             </div>
         </div>
     </div>

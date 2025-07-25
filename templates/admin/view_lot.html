@@ -1,0 +1,25 @@
+{% extends 'admin/admin_base.html' %}
+{% block pg_title %}View {{ lot.location_name }}{% endblock %}
+{% block admin_main %}
+<h1 class="h2">Lot View: {{ lot.location_name }}</h1>
+<p class="text-muted">{{ lot.address }}, {{ lot.pin_code }}</p>
+<div class="row mt-4">
+    {% for spot in spots %}
+    <div class="col-md-2 mb-3">
+        <div class="card text-center {% if spot.status == 'O' %}border-danger{% else %}border-success{% endif %}">
+            <div class="card-body">
+                <h5 class="card-title">Spot #{{ loop.index }}</h5>
+                <p class="card-text">
+                    {% if spot.status == 'O' %}
+                        <span class="badge badge-danger">Taken</span>
+                    {% else %}
+                        <span class="badge badge-success">Open</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary mt-3">Return</a>
+{% endblock %}

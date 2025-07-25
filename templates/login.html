@@ -13,7 +13,7 @@
                 {% endif %}
             {% endwith %}
             <h3 class="card-title text-center mb-4">Account Login</h3>
-            <form method="post" action="{{ url_for('auth.login_user') }}">
+            <form method="post" action="{{ url_for('auth.login') }}"> <!-- CHANGED HERE -->
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" class="form-control" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address.">
@@ -25,7 +25,7 @@
                 <button type="submit" class="btn btn-primary btn-block mt-4">Sign In</button>
             </form>
             <div class="text-center mt-3">
-                <small>New to ParkEZily? <a href="{{ url_for('auth.register_user') }}">Create an account</a></small>
+                <small>New to ParkEZily? <a href="{{ url_for('auth.register') }}">Create an account</a></small> <!-- AND HERE -->
             </div>
         </div>
     </div>
