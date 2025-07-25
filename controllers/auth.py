@@ -61,7 +61,7 @@ def login(): # Function renamed to 'login'
     if user['role'] == 'admin':
         return redirect(url_for('admin.dashboard'))
     else:
-        return redirect(url_for('user_dash'))
+        return redirect(url_for('user.dashboard'))
 
 @auth_bp.route('/logout')
 def logout(): # Function renamed to 'logout'

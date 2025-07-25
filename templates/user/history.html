@@ -1,0 +1,29 @@
+{% extends 'user/user_base.html' %}
+{% block pg_title %}Parking History{% endblock %}
+{% block user_main %}
+<h2 class="mb-4">Your Parking History</h2>
+<table class="table table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Location</th>
+            <th>Start Time (UTC)</th>
+            <th>End Time (UTC)</th>
+            <th>Total Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in history %}
+        <tr>
+            <td>{{ item.location_name }}</td>
+            <td>{{ item.start_time.split('.')[0] }}</td>
+            <td>{{ item.end_time.split('.')[0] }}</td>
+            <td>${{ "%.2f"|format(item.total_cost) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center">You have no past parking sessions.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

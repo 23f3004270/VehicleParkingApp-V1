@@ -1,0 +1,56 @@
+{% extends 'user/user_base.html' %}
+{% block pg_title %}Dashboard{% endblock %}
+{% block user_main %}
+<h2 class="mb-4">Welcome, {{ session.name }}!</h2>
+
+{% if active_res %}
+<div class="card text-white bg-success mb-4">
+    <div class="card-header"><h4>Active Parking Session</h4></div>
+    <div class="card-body">
+        <p class="card-text">
+            You are currently parked at <strong>{{ active_res.location_name }}</strong> in spot #{{ active_res.spot_num }}.
+        </p>
+        <p>Parked since: {{ active_res.start_time.split('.')[0] }} UTC</p>
+        <form action="{{ url_for('user.release_spot', res_id=active_res.res_id) }}" method="POST">
+            <button type="submit" class="btn btn-light">Release Spot & End Session</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="card bg-info text-white mb-4">
+    <div class="card-header"><h4>Find a Spot</h4></div>
+    <div class="card-body">
+        <p>You have no active parking session. Choose a lot below to reserve a spot.</p>
+    </div>
+</div>
+{% endif %}
+
+<h3 class="mt-5">Available Parking Lots</h3>
+<div class="row">
+    {% for lot in lots %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ lot.location_name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ lot.address }}</h6>
+                <p class="card-text">
+                    <strong>Available Spots:</strong> {{ lot.avail_spots }} <br>
+                    <strong>Price:</strong> ${{ "%.2f"|format(lot.price_per_hour) }}/hour
+                </p>
+                {% if not active_res and lot.avail_spots > 0 %}
+                <form action="{{ url_for('user.book_spot', lot_id=lot.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary">Park Here</button>
+                </form>
+                {% elif active_res %}
+                <button class="btn btn-secondary" disabled>Cannot Park</button>
+                {% else %}
+                <button class="btn btn-danger" disabled>Lot Full</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No parking lots have been set up by the administrator yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
