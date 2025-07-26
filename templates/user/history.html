@@ -8,6 +8,7 @@
             <th>Location</th>
             <th>Start Time (UTC)</th>
             <th>End Time (UTC)</th>
+            <th>Duration</th> <!-- new column -->
             <th>Total Cost</th>
         </tr>
     </thead>
@@ -17,11 +18,12 @@
             <td>{{ item.location_name }}</td>
             <td>{{ item.start_time.split('.')[0] }}</td>
             <td>{{ item.end_time.split('.')[0] }}</td>
+            <td>{{ item.duration }}</td> <!-- new data -->
             <td>${{ "%.2f"|format(item.total_cost) }}</td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="4" class="text-center">You have no past parking sessions.</td>
+            <td colspan="5" class="text-center">You have no past parking sessions.</td>
         </tr>
         {% endfor %}
     </tbody>

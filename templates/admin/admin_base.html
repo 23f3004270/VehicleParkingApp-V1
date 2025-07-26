@@ -1,4 +1,5 @@
-<html lang="en">
+
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,8 @@
         <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">ParkEZily Admin</a>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Sign out</a> <!-- CHANGED HERE -->
+                <!-- THIS IS THE LINE THAT WAS FIXED -->
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">Sign out</a>
             </li>
         </ul>
     </nav>
@@ -26,7 +28,10 @@
                 <div class="sidebar-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.records') }}">Parking Records</a>
                         </li>
                     </ul>
                 </div>

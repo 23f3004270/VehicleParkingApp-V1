@@ -137,12 +137,31 @@ def release_spot(res_id):
 
 @user_bp.route('/history')
 @user_login_req
+def format_duration(start, end):
+    # duration helper
+    if not end:
+        return "N/A"
+    start_dt = datetime.strptime(start, '%Y-%m-%d %H:%M:%S.%f')
+    end_dt = datetime.strptime(end, '%Y-%m-%d %H:%M:%S.%f')
+    delta = end_dt - start_dt
+    
+    hrs, rem = divmod(delta.seconds, 3600)
+    mins, secs = divmod(rem, 60)
+    
+    if hrs > 0:
+        return f"{hrs}h {mins}m"
+    elif mins > 0:
+        return f"{mins}m {secs}s"
+    return f"{secs}s"
+
+@user_bp.route('/history')
+@user_login_req
 def history():
     # view past parks
     uid = session['uid']
     db = get_db()
     
-    past_res = db.execute(
+    raw_history = db.execute(
         '''
         SELECT p.location_name, r.start_time, r.end_time, r.total_cost
         FROM reservation r
@@ -153,5 +172,12 @@ def history():
         ''', (uid,)
     ).fetchall()
     
+    # process history
+    processed_history = []
+    for item in raw_history:
+        item_dict = dict(item)
+        item_dict['duration'] = format_duration(item['start_time'], item['end_time'])
+        processed_history.append(item_dict)
+    
     db.close()
-    return render_template('user/history.html', history=past_res)
+    return render_template('user/history.html', history=processed_history)

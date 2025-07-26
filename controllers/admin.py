@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from functools import wraps
+from datetime import datetime
 
 DB_FILE = 'parkezily.db'
 
@@ -114,3 +115,43 @@ def inspect_lot(lot_id):
     spots = db.execute('SELECT * FROM parking_spot WHERE lot_id = ?', (lot_id,)).fetchall()
     db.close()
     return render_template('admin/view_lot.html', lot=lot, spots=spots)
+
+def format_duration(start, end):
+    # duration helper
+    if not end:
+        return "Active"
+    start_dt = datetime.strptime(start, '%Y-%m-%d %H:%M:%S.%f')
+    end_dt = datetime.strptime(end, '%Y-%m-%d %H:%M:%S.%f')
+    delta = end_dt - start_dt
+    
+    hrs, rem = divmod(delta.seconds, 3600)
+    mins, _ = divmod(rem, 60)
+    
+    if hrs > 0:
+        return f"{hrs}h {mins}m"
+    return f"{mins}m"
+
+@adm_bp.route('/admin/records')
+@login_req
+def records():
+    # view all records
+    db = get_db()
+    raw_records = db.execute(
+        '''
+        SELECT u.name, p.location_name, r.start_time, r.end_time, r.total_cost
+        FROM reservation r
+        JOIN users u ON r.user_id = u.id
+        JOIN parking_spot ps ON r.spot_id = ps.id
+        JOIN parking_lot p ON ps.lot_id = p.id
+        ORDER BY r.start_time DESC
+        '''
+    ).fetchall()
+
+    processed_records = []
+    for rec in raw_records:
+        rec_dict = dict(rec)
+        rec_dict['duration'] = format_duration(rec['start_time'], rec['end_time'])
+        processed_records.append(rec_dict)
+
+    db.close()
+    return render_template('admin/records.html', records=processed_records)
