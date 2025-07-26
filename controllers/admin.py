@@ -155,3 +155,58 @@ def records():
 
     db.close()
     return render_template('admin/records.html', records=processed_records)
+
+@adm_bp.route('/admin/search', methods=['GET', 'POST'])
+@login_req
+def search():
+    # find user or spot
+    results = None
+    query = ""
+    if request.method == 'POST':
+        query = request.form['query']
+        db = get_db()
+        
+        # determine search type
+        if query.isdigit():
+            # spot id search
+            spot_id = int(query)
+            spot_info = db.execute(
+                '''
+                SELECT ps.id, ps.status, pl.location_name
+                FROM parking_spot ps
+                JOIN parking_lot pl ON ps.lot_id = pl.id
+                WHERE ps.id = ?
+                ''', (spot_id,)
+            ).fetchone()
+            results = {'spots': [dict(spot_info)] if spot_info else []}
+
+        else:
+            # user name/email search
+            search_term = f"%{query}%"
+            users = db.execute(
+                "SELECT id, name, email FROM users WHERE (name LIKE ? OR email LIKE ?) AND role = 'user'",
+                (search_term, search_term)
+            ).fetchall()
+
+            user_results = []
+            for usr in users:
+                active_res = db.execute(
+                    '''
+                    SELECT p.location_name, ps.id as spot_num
+                    FROM reservation r
+                    JOIN parking_spot ps ON r.spot_id = ps.id
+                    JOIN parking_lot p ON ps.lot_id = p.id
+                    WHERE r.user_id = ? AND r.end_time IS NULL
+                    ''', (usr['id'],)
+                ).fetchone()
+                
+                usr_data = dict(usr)
+                usr_data['parking'] = dict(active_res) if active_res else None
+                user_results.append(usr_data)
+            results = {'users': user_results}
+        
+        db.close()
+        if not results.get('users') and not results.get('spots'):
+            flash('No matches found for your query.', 'info')
+
+    return render_template('admin/search.html', results=results, query=query)
