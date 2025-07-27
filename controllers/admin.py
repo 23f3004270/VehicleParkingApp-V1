@@ -36,13 +36,24 @@ def dashboard():
 @adm_bp.route('/admin/lot/create', methods=['GET', 'POST'])
 @login_req
 def create_lot():
-    # new lot form
     if request.method == 'POST':
         name = request.form['name']
         addr = request.form['addr']
         pin = request.form['pin']
-        cap = int(request.form['cap'])
-        cost = float(request.form['cost'])
+
+        if not all([name, addr, pin, request.form.get('cap'), request.form.get('cost')]):
+
+            flash('All fields are required.', 'danger')
+            return redirect(url_for('admin.create_lot'))
+
+        try:
+            cap = int(request.form['cap'])
+            cost = float(request.form['cost'])
+            if cap <= 0 or cost < 0:
+                raise ValueError("Capacity and cost must be positive numbers.")
+        except (ValueError, TypeError):
+            flash('Invalid input for capacity or cost.', 'danger')
+            return redirect(url_for('admin.create_lot'))
 
         db = get_db()
         cur = db.cursor()
@@ -51,22 +62,17 @@ def create_lot():
             (name, addr, pin, cap, cost)
         )
         lot_id = cur.lastrowid
-
-        # auto-create spots
         for _ in range(cap):
             cur.execute('INSERT INTO parking_spot (lot_id, status) VALUES (?, ?)', (lot_id, 'A'))
-
         db.commit()
         db.close()
         flash(f'Lot "{name}" created with {cap} spots.', 'success')
         return redirect(url_for('admin.dashboard'))
-
     return render_template('admin/add_lot.html')
 
 @adm_bp.route('/admin/lot/update/<int:lot_id>', methods=['GET', 'POST'])
 @login_req
 def update_lot(lot_id):
-    # edit existing
     db = get_db()
     lot = db.execute('SELECT * FROM parking_lot WHERE id = ?', (lot_id,)).fetchone()
 
@@ -74,19 +80,29 @@ def update_lot(lot_id):
         name = request.form['name']
         addr = request.form['addr']
         pin = request.form['pin']
-        cap = int(request.form['cap'])
-        cost = float(request.form['cost'])
+
+        if not all([name, addr, pin, request.form.get('cap'), request.form.get('cost')]):
+            # required check
+            flash('All fields are required.', 'danger')
+            return redirect(url_for('admin.update_lot', lot_id=lot_id))
+
+        try:
+            # num check
+            cap = int(request.form['cap'])
+            cost = float(request.form['cost'])
+            if cap <= 0 or cost < 0:
+                raise ValueError("Capacity and cost must be positive numbers.")
+        except (ValueError, TypeError):
+            flash('Invalid input for capacity or cost.', 'danger')
+            return redirect(url_for('admin.update_lot', lot_id=lot_id))
 
         db.execute(
             'UPDATE parking_lot SET location_name = ?, address = ?, pin_code = ?, max_spots = ?, price_per_hour = ? WHERE id = ?',
             (name, addr, pin, cap, cost, lot_id)
         )
-        
-        # simple spot update
         db.execute('DELETE FROM parking_spot WHERE lot_id = ?', (lot_id,))
         for _ in range(cap):
             db.execute('INSERT INTO parking_spot (lot_id, status) VALUES (?, ?)', (lot_id, 'A'))
-
         db.commit()
         db.close()
         flash(f'Lot "{name}" updated.', 'success')
@@ -168,7 +184,6 @@ def search():
         
         # determine search type
         if query.isdigit():
-            # spot id search
             spot_id = int(query)
             spot_info = db.execute(
                 '''

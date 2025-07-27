@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+import re
 
 DATABASE_FILE = 'parkezily.db'
 
@@ -12,7 +13,7 @@ def get_db():
     return db
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
-def register(): # Function renamed to 'register'
+def register():
     if request.method == 'GET':
         return render_template('register.html')
 
@@ -20,16 +21,24 @@ def register(): # Function renamed to 'register'
     email = request.form['email']
     pwd = request.form['password']
 
+    if not name or not email or not pwd:
+        # required check
+        flash('All fields are required.', 'danger')
+        return redirect(url_for('auth.register'))
+
+    if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", pwd):
+        flash('Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.', 'danger')
+        return redirect(url_for('auth.register'))
+
     db = get_db()
     user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
 
     if user:
         flash('Email already registered.', 'warning')
         db.close()
-        return redirect(url_for('auth.register')) # Updated url_for
+        return redirect(url_for('auth.register'))
 
     hash_pwd = generate_password_hash(pwd, method='pbkdf2:sha256')
-
     db.execute('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
                      (name, email, hash_pwd, 'user'))
     db.commit()
