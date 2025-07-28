@@ -1,36 +1,57 @@
-{% extends 'base.html' %}
-{% block page_title %}Create Account{% endblock %}
-{% block page_content %}
+{% extends 'base.html' %} {% block page_title %}Create Account{% endblock %} {%
+block page_content %}
 <div class="col-md-9 col-lg-8">
-    <div class="card shadow p-4">
-         <div class="card-body">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <h3 class="card-title text-center mb-4">Create Your ParkEZily Account</h3>
-            <form method="post" action="{{ url_for('auth.register') }}"> <!-- CHANGED HERE -->
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" class="form-control" id="fullName" name="fullName" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address.">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-success btn-block mt-4">Register</button>
-            </form>
-            <div class="text-center mt-3">
-                <small>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></small> <!-- AND HERE -->
-            </div>
+  <div class="card shadow p-4">
+    <div class="card-body">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+      <h3 class="card-title text-center mb-4">Create Your ParkEZily Account</h3>
+      <form method="post" action="{{ url_for('auth.register') }}">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="fullName"
+            name="fullName"
+            required
+          />
         </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            required
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            title="Please enter a valid email address."
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-success btn-block mt-4">
+          Register
+        </button>
+      </form>
+      <div class="text-center mt-3">
+        <small
+          >Already have an account?
+          <a href="{{ url_for('auth.login') }}">Log in</a></small
+        >
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

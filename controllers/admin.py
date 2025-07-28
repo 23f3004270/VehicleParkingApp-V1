@@ -1,5 +1,4 @@
-# controllers/admin.py
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite3
 from functools import wraps
 from datetime import datetime
@@ -177,3 +176,33 @@ def search():
         if not results.get('users') and not results.get('spots'):
             flash('No matches found for your query.', 'info')
     return render_template('admin/search.html', results=results, query=query)
+
+@adm_bp.route('/admin/charts/data')
+@login_req
+def chart_data():
+    db = get_db()
+    
+    # pichart
+    occupied_count = db.execute("SELECT COUNT(id) as count FROM parking_spot WHERE status = 'O'").fetchone()['count']
+    available_count = db.execute("SELECT COUNT(id) as count FROM parking_spot WHERE status = 'A'").fetchone()['count']
+    
+    # barchart
+    lots = db.execute("SELECT id, location_name FROM parking_lot WHERE status = 'active'").fetchall()
+    lot_labels = [lot['location_name'] for lot in lots]
+    lot_availability = []
+    for lot in lots:
+        avail = db.execute("SELECT COUNT(id) as count FROM parking_spot WHERE lot_id = ? AND status = 'A'", (lot['id'],)).fetchone()['count']
+        lot_availability.append(avail)
+
+    db.close()
+    
+    return jsonify({
+        'pie': {
+            'occupied': occupied_count,
+            'available': available_count
+        },
+        'bar': {
+            'labels': lot_labels,
+            'availability': lot_availability
+        }
+    })

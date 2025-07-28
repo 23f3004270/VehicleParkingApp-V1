@@ -8,7 +8,8 @@
     <div class="card-body">
         <form method="POST">
             <div class="input-group">
-                <input type="text" class="form-control" name="query" placeholder="type here" value="{{ query }}" required>
+                <input type="text" class="form-control" name="query" placeholder="type here" value="{{ query }}"
+                    required>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit">Find</button>
                 </div>
@@ -22,43 +23,43 @@
     <div class="card-header">Search Results</div>
     <div class="card-body">
         {% if results.users %}
-            <ul class="list-group">
-                {% for usr in results.users %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ usr.name }}</strong><br>
-                        <small class="text-muted">{{ usr.email }}</small>
-                    </div>
-                    <div>
-                        {% if usr.parking %}
-                            <span class="badge badge-danger badge-pill p-2">
-                                Parked at {{ usr.parking.location_name }}, Spot #{{ usr.parking.spot_num }}
-                            </span>
-                        {% else %}
-                            <span class="badge badge-success badge-pill p-2">Not Parked</span>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+        <ul class="list-group">
+            {% for usr in results.users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ usr.name }}</strong><br>
+                    <small class="text-muted">{{ usr.email }}</small>
+                </div>
+                <div>
+                    {% if usr.parking %}
+                    <span class="badge badge-danger badge-pill p-2">
+                        Parked at {{ usr.parking.location_name }}, Spot #{{ usr.parking.spot_num }}
+                    </span>
+                    {% else %}
+                    <span class="badge badge-success badge-pill p-2">Not Parked</span>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
         {% elif results.spots %}
-            <ul class="list-group">
-                {% for spot in results.spots %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Spot #{{ spot.id }}</strong><br>
-                        <small class="text-muted">in {{ spot.location_name }}</small>
-                    </div>
-                    <div>
-                        {% if spot.status == 'O' %}
-                            <span class="badge badge-danger badge-pill p-2">Occupied</span>
-                        {% else %}
-                            <span class="badge badge-success badge-pill p-2">Available</span>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+        <ul class="list-group">
+            {% for spot in results.spots %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Spot #{{ spot.id }}</strong><br>
+                    <small class="text-muted">in {{ spot.location_name }}</small>
+                </div>
+                <div>
+                    {% if spot.status == 'O' %}
+                    <span class="badge badge-danger badge-pill p-2">Occupied</span>
+                    {% else %}
+                    <span class="badge badge-success badge-pill p-2">Available</span>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
 </div>

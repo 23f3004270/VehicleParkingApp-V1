@@ -1,41 +1,68 @@
-{% extends 'user/user_base.html' %}
-{% block pg_title %}Parking History{% endblock %}
-{% block user_main %}
+{% extends 'user/user_base.html' %} {% block pg_title %}Parking History{%
+endblock %} {% block user_main %}
 <h2 class="mb-4">Your Parking History</h2>
 <table class="table table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Location</th>
-            <th>Start Time (IST)</th>
-            <th>End Time (IST)</th>
-            <th>Duration</th>
-            <th>Cost</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in history %}
-        <tr>
-            <td>{{ item.location_name or 'N/A' }}</td>
-            <td>{{ item.start_ist }}</td>
-            <td>{{ item.end_ist }}</td>
-            <td>{{ item.duration }}</td>
-            <td>₹{{ "%.2f"|format(item.total_cost) }}</td>
-            <td>
-                {% if item.lot_status == 'deleted' %}
-                    <span class="badge badge-danger">Deleted</span>
-                {% elif item.lot_status == 'active' %}
-                    <span class="badge badge-success">Active</span>
-                {% else %}
-                    <span class="badge badge-secondary">N/A</span>
-                {% endif %}
-            </td>
-        </tr>
+  <thead class="thead-dark">
+    <tr>
+      <th>Location</th>
+      <th>Start Time (IST)</th>
+      <th>End Time (IST)</th>
+      <th>Duration</th>
+      <th>Cost</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in history %}
+    <tr>
+      <td>{{ item.location_name or 'N/A' }}</td>
+      <td>{{ item.start_ist }}</td>
+      <td>{{ item.end_ist }}</td>
+      <td>{{ item.duration }}</td>
+      <td>₹{{ "%.2f"|format(item.total_cost) }}</td>
+      <td>
+        {% if item.lot_status == 'deleted' %}
+        <span class="badge badge-danger">Deleted</span>
+        {% elif item.lot_status == 'active' %}
+        <span class="badge badge-success">Active</span>
         {% else %}
-        <tr>
-            <td colspan="6" class="text-center">You have no past parking sessions.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+        <span class="badge badge-secondary">N/A</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" class="text-center">
+        You have no past parking sessions.
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
-{% endblock %}
+
+{% if chart_labels %}
+<section class="mt-5">
+  <h3 class="h4">Your Monthly Spending</h3>
+  <div class="card">
+    <div class="card-body">
+      <canvas id="spendingChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<script>
+  const spendingCtx = document.getElementById('spendingChart').getContext('2d');
+  new Chart(spendingCtx, {
+      type: 'line',
+      data: {
+          labels: {{ chart_labels | tojson }},
+          datasets: [{
+              label: 'Total Spending (₹)',
+              data: {{ chart_data | tojson }},
+              borderColor: '#28a745',
+              tension: 0.1
+          }]
+      }
+  });
+</script>
+{% endif %} {% endblock %}

@@ -1,46 +1,48 @@
-{% extends 'admin/admin_base.html' %}
-{% block pg_title %}All Parking Records{% endblock %}
-{% block admin_main %}
+{% extends 'admin/admin_base.html' %} {% block pg_title %}All Parking Records{%
+endblock %} {% block admin_main %}
 <h1 class="h2">All Parking Records</h1>
 <p>A complete history of all parking sessions across all lots.</p>
 <div class="table-responsive mt-4">
-    <table class="table table-striped table-sm">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Location</th>
-                <th>Start Time (IST)</th>
-                <th>End Time (IST)</th>
-                <th>Duration</th>
-                <th>Cost</th>
-                <th>Lot Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for rec in records %}
-            <tr>
-                <td>{{ rec.name }}</td>
-                <td>{{ rec.location_name or 'N/A' }}</td>
-                <td>{{ rec.start_ist }}</td>
-                <td>{{ rec.end_ist if rec.end_time else 'Active' }}</td>
-                <td>{{ rec.duration }}</td>
-                <td>₹{{ "%.2f"|format(rec.total_cost) if rec.total_cost is not none else 'N/A' }}</td>
-                <td>
-                    {% if rec.lot_status == 'deleted' %}
-                        <span class="badge badge-danger">Deleted</span>
-                    {% elif rec.lot_status == 'active' %}
-                        <span class="badge badge-success">Active</span>
-                    {% else %}
-                        <span class="badge badge-secondary">N/A</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="text-center">No parking records found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Location</th>
+        <th>Start Time (IST)</th>
+        <th>End Time (IST)</th>
+        <th>Duration</th>
+        <th>Cost</th>
+        <th>Lot Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rec in records %}
+      <tr>
+        <td>{{ rec.name }}</td>
+        <td>{{ rec.location_name or 'N/A' }}</td>
+        <td>{{ rec.start_ist }}</td>
+        <td>{{ rec.end_ist if rec.end_time else 'Active' }}</td>
+        <td>{{ rec.duration }}</td>
+        <td>
+          ₹{{ "%.2f"|format(rec.total_cost) if rec.total_cost is not none else
+          'N/A' }}
+        </td>
+        <td>
+          {% if rec.lot_status == 'deleted' %}
+          <span class="badge badge-danger">Deleted</span>
+          {% elif rec.lot_status == 'active' %}
+          <span class="badge badge-success">Active</span>
+          {% else %}
+          <span class="badge badge-secondary">N/A</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" class="text-center">No parking records found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

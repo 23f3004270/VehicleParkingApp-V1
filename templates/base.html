@@ -1,78 +1,80 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block page_title %}ParkEZily{% endblock %}</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #F0F7F4; /* Lighter mint-cream background */
-        }
-        .main-container {
-            display: flex;
-            min-height: 100vh;
-            align-items: center;
-        }
-        .title-section {
-            flex: 1;
-            padding: 5rem;
-            color: #1A535C;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .title-section h1 {
-            font-size: 4rem;
-            font-weight: 600;
-
-        }
-        .title-section p {
-            font-size: 1.5rem;
-            color: #4ECDC4;
-
-        }
-        .form-section {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-        }
-        .btn-primary {
-            background-color: #1A535C;
-            border-color: #1A535C;
-        }
-        .btn-primary:hover {
-            background-color: #133c44;
-            border-color: #133c44;
-        }
-        .btn-success {
-            background-color: #4ECDC4;
-            border-color: #4ECDC4;
-        }
-         .btn-success:hover {
-            background-color: #3ab8af;
-            border-color: #3ab8af;
-        }
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f0f7f4; /* Lighter mint-cream background */
+      }
+      .main-container {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+      }
+      .title-section {
+        flex: 1;
+        padding: 5rem;
+        color: #1a535c;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .title-section h1 {
+        font-size: 4rem;
+        font-weight: 600;
+      }
+      .title-section p {
+        font-size: 1.5rem;
+        color: #4ecdc4;
+      }
+      .form-section {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+      }
+      .btn-primary {
+        background-color: #1a535c;
+        border-color: #1a535c;
+      }
+      .btn-primary:hover {
+        background-color: #133c44;
+        border-color: #133c44;
+      }
+      .btn-success {
+        background-color: #4ecdc4;
+        border-color: #4ecdc4;
+      }
+      .btn-success:hover {
+        background-color: #3ab8af;
+        border-color: #3ab8af;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="main-container">
-        <div class="title-section">
-            <h1>ParkEZily!</h1>
-            <p>The parking app.</p>
-        </div>
-        <div class="form-section">
-            {% block page_content %}{% endblock %}
-        </div>
+      <div class="title-section">
+        <h1>ParkEZily!</h1>
+        <p>The parking app.</p>
+      </div>
+      <div class="form-section">{% block page_content %}{% endblock %}</div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>

@@ -13,7 +13,7 @@ def get_db():
     return db
 
 def user_login_req(f):
-    # auth decorator
+    #authdecorator
     @wraps(f)
     def wrapper(*args, **kwargs):
         if 'uid' not in session:
@@ -25,7 +25,7 @@ def user_login_req(f):
 @user_bp.route('/dashboard')
 @user_login_req
 def dashboard():
-    # main view
+    # mainview
     db = get_db()
     active_res = db.execute(
         '''
@@ -53,7 +53,7 @@ def dashboard():
 @user_bp.route('/book/<int:lot_id>', methods=['POST'])
 @user_login_req
 def book_spot(lot_id):
-    # book first avail
+    # bookfirstavail
     uid = session['uid']
     db = get_db()
     if db.execute('SELECT id FROM reservation WHERE user_id = ? AND end_time IS NULL', (uid,)).fetchone():
@@ -76,7 +76,6 @@ def book_spot(lot_id):
 @user_bp.route('/release/<int:res_id>', methods=['POST'])
 @user_login_req
 def release_spot(res_id):
-    # end session
     db = get_db()
     res = db.execute('SELECT * FROM reservation WHERE id = ?', (res_id,)).fetchone()
     spot_id = res['spot_id']
@@ -94,9 +93,30 @@ def release_spot(res_id):
 @user_bp.route('/history')
 @user_login_req
 def history():
-    # view past parks
+    # viewpastparks
     db = get_db()
     raw_history = db.execute(
+        '''
+        SELECT start_time, total_cost
+        FROM reservation
+        WHERE user_id = ? AND end_time IS NOT NULL ORDER BY start_time ASC
+        ''', (session['uid'],)
+    ).fetchall()
+    
+    #proc_chart
+    monthly_spending = {}
+    for item in raw_history:
+        month_key = datetime.strptime(item['start_time'], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m')
+        if month_key not in monthly_spending:
+            monthly_spending[month_key] = 0
+        monthly_spending[month_key] += item['total_cost']
+    
+    #sort
+    sorted_months = sorted(monthly_spending.keys())
+    chart_labels = [datetime.strptime(m, '%Y-%m').strftime('%b %Y') for m in sorted_months]
+    chart_data = [monthly_spending[m] for m in sorted_months]
+
+    full_history_raw = db.execute(
         '''
         SELECT p.location_name, p.status as lot_status, r.start_time, r.end_time, r.total_cost
         FROM reservation r
@@ -105,12 +125,19 @@ def history():
         WHERE r.user_id = ? AND r.end_time IS NOT NULL ORDER BY r.start_time DESC
         ''', (session['uid'],)
     ).fetchall()
+    
     proc_history = []
-    for item in raw_history:
+    for item in full_history_raw:
         item_dict = dict(item)
         item_dict['duration'] = format_duration(item['start_time'], item['end_time'])
         item_dict['start_ist'] = format_ist(item['start_time'])
         item_dict['end_ist'] = format_ist(item['end_time'])
         proc_history.append(item_dict)
+        
     db.close()
-    return render_template('user/history.html', history=proc_history)
+    return render_template(
+        'user/history.html', 
+        history=proc_history, 
+        chart_labels=chart_labels, 
+        chart_data=chart_data
+    )
