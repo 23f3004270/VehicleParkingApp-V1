@@ -7,27 +7,37 @@
     <table class="table table-striped table-sm">
         <thead>
             <tr>
-                <th>User Name</th>
+                <th>User</th>
                 <th>Location</th>
-                <th>Start Time (UTC)</th>
-                <th>End Time (UTC)</th>
+                <th>Start Time (IST)</th>
+                <th>End Time (IST)</th>
                 <th>Duration</th>
                 <th>Cost</th>
+                <th>Lot Status</th>
             </tr>
         </thead>
         <tbody>
             {% for rec in records %}
             <tr>
                 <td>{{ rec.name }}</td>
-                <td>{{ rec.location_name }}</td>
-                <td>{{ rec.start_time.split('.')[0] }}</td>
-                <td>{{ rec.end_time.split('.')[0] if rec.end_time else 'Active' }}</td>
+                <td>{{ rec.location_name or 'N/A' }}</td>
+                <td>{{ rec.start_ist }}</td>
+                <td>{{ rec.end_ist if rec.end_time else 'Active' }}</td>
                 <td>{{ rec.duration }}</td>
-                <td>${{ "%.2f"|format(rec.total_cost) if rec.total_cost is not none else 'N/A' }}</td>
+                <td>₹{{ "%.2f"|format(rec.total_cost) if rec.total_cost is not none else 'N/A' }}</td>
+                <td>
+                    {% if rec.lot_status == 'deleted' %}
+                        <span class="badge badge-danger">Deleted</span>
+                    {% elif rec.lot_status == 'active' %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-secondary">N/A</span>
+                    {% endif %}
+                </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" class="text-center">No parking records found.</td>
+                <td colspan="7" class="text-center">No parking records found.</td>
             </tr>
             {% endfor %}
         </tbody>

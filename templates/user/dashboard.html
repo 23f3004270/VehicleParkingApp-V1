@@ -10,7 +10,7 @@
         <p class="card-text">
             You are currently parked at <strong>{{ active_res.location_name }}</strong> in spot #{{ active_res.spot_num }}.
         </p>
-        <p>Parked since: {{ active_res.start_time.split('.')[0] }} UTC</p>
+        <p>Parked since: {{ active_res.start_ist }}</p>
         <form action="{{ url_for('user.release_spot', res_id=active_res.res_id) }}" method="POST">
             <button type="submit" class="btn btn-light">Release Spot & End Session</button>
         </form>
@@ -35,7 +35,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ lot.address }}</h6>
                 <p class="card-text">
                     <strong>Available Spots:</strong> {{ lot.avail_spots }} <br>
-                    <strong>Price:</strong> ${{ "%.2f"|format(lot.price_per_hour) }}/hour
+                    <strong>Price:</strong> ₹{{ "%.2f"|format(lot.price_per_hour) }}/hour
                 </p>
                 {% if not active_res and lot.avail_spots > 0 %}
                 <form action="{{ url_for('user.book_spot', lot_id=lot.id) }}" method="POST">

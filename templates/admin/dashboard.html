@@ -18,7 +18,7 @@
                     <td>{{ lot.id }}</td>
                     <td>{{ lot.location_name }}</td>
                     <td>{{ lot.max_spots }}</td>
-                    <td>${{ "%.2f"|format(lot.price_per_hour) }}</td>
+                    <td>₹{{ "%.2f"|format(lot.price_per_hour) }}</td>
                     <td>
                         <a href="{{ url_for('admin.inspect_lot', lot_id=lot.id) }}" class="btn btn-info btn-sm">View</a>
                         <a href="{{ url_for('admin.update_lot', lot_id=lot.id) }}" class="btn btn-warning btn-sm">Edit</a>

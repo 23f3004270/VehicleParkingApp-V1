@@ -1,14 +1,14 @@
+# controllers/auth.py
+import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
-import re
 
-DATABASE_FILE = 'parkezily.db'
-
+DB_FILE = 'parkezily.db'
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 def get_db():
-    db = sqlite3.connect(DATABASE_FILE)
+    db = sqlite3.connect(DB_FILE)
     db.row_factory = sqlite3.Row
     return db
 
@@ -21,59 +21,56 @@ def register():
     email = request.form['email']
     pwd = request.form['password']
 
+    # backend validation
     if not name or not email or not pwd:
-        # required check
         flash('All fields are required.', 'danger')
         return redirect(url_for('auth.register'))
 
+    if not re.match(r"^[A-Za-z\s]+$", name):
+        flash('Full name must contain only letters and spaces.', 'danger')
+        return redirect(url_for('auth.register'))
+
     if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", pwd):
-        flash('Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.', 'danger')
+        flash('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.', 'danger')
         return redirect(url_for('auth.register'))
 
     db = get_db()
     user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
-
     if user:
         flash('Email already registered.', 'warning')
         db.close()
         return redirect(url_for('auth.register'))
 
     hash_pwd = generate_password_hash(pwd, method='pbkdf2:sha256')
-    db.execute('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-                     (name, email, hash_pwd, 'user'))
+    db.execute('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', (name, email, hash_pwd, 'user'))
     db.commit()
     db.close()
 
     flash('Registration complete. Please log in.', 'success')
-    return redirect(url_for('auth.login')) # Updated url_for
+    return redirect(url_for('auth.login'))
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
-def login(): # Function renamed to 'login'
+def login():
     if request.method == 'GET':
         return render_template('login.html')
-
     email = request.form['email']
     pwd = request.form['password']
-
     db = get_db()
     user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
     db.close()
-
     if not user or not check_password_hash(user['password'], pwd):
         flash('Login failed. Check details.', 'danger')
-        return redirect(url_for('auth.login')) # Updated url_for
-
+        return redirect(url_for('auth.login'))
     session['uid'] = user['id']
     session['name'] = user['name']
     session['user_role'] = user['role']
-
     if user['role'] == 'admin':
         return redirect(url_for('admin.dashboard'))
     else:
         return redirect(url_for('user.dashboard'))
 
 @auth_bp.route('/logout')
-def logout(): # Function renamed to 'logout'
+def logout():
     session.clear()
     flash('Successfully logged out.', 'info')
-    return redirect(url_for('auth.login')) # Updated url_for
+    return redirect(url_for('auth.login'))

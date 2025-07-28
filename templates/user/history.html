@@ -6,24 +6,34 @@
     <thead class="thead-dark">
         <tr>
             <th>Location</th>
-            <th>Start Time (UTC)</th>
-            <th>End Time (UTC)</th>
-            <th>Duration</th> <!-- new column -->
-            <th>Total Cost</th>
+            <th>Start Time (IST)</th>
+            <th>End Time (IST)</th>
+            <th>Duration</th>
+            <th>Cost</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
         {% for item in history %}
         <tr>
-            <td>{{ item.location_name }}</td>
-            <td>{{ item.start_time.split('.')[0] }}</td>
-            <td>{{ item.end_time.split('.')[0] }}</td>
-            <td>{{ item.duration }}</td> <!-- new data -->
-            <td>${{ "%.2f"|format(item.total_cost) }}</td>
+            <td>{{ item.location_name or 'N/A' }}</td>
+            <td>{{ item.start_ist }}</td>
+            <td>{{ item.end_ist }}</td>
+            <td>{{ item.duration }}</td>
+            <td>₹{{ "%.2f"|format(item.total_cost) }}</td>
+            <td>
+                {% if item.lot_status == 'deleted' %}
+                    <span class="badge badge-danger">Deleted</span>
+                {% elif item.lot_status == 'active' %}
+                    <span class="badge badge-success">Active</span>
+                {% else %}
+                    <span class="badge badge-secondary">N/A</span>
+                {% endif %}
+            </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="5" class="text-center">You have no past parking sessions.</td>
+            <td colspan="6" class="text-center">You have no past parking sessions.</td>
         </tr>
         {% endfor %}
     </tbody>
